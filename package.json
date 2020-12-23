@@ -1,0 +1,28 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "Compares two configuration files and shows a difference.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/almazidiyatshin/frontend-project-lvl2.git"
+  },
+  "author": "Almaz Idiyatshin",
+  "email": "dev@tshin.ru",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/almazidiyatshin/frontend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/almazidiyatshin/frontend-project-lvl2#readme",
+  "type": "module",
+  "bin": {
+    "gendiff": "bin/gendiff.js"
+  },
+  "devDependencies": {
+    "eslint": "^7.16.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
+  },
+  "dependencies": {
+    "commander": "^6.2.1"
+  }
+}
