@@ -2,6 +2,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "Compares two configuration files and shows a difference.",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/almazidiyatshin/frontend-project-lvl2.git"
