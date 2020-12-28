@@ -6,7 +6,7 @@ name: NodeCI
 on:
   - push
   - pull_request
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,3 +28,10 @@ jobs:
     - name: run linter
       run: |
         make lint
+    - name: Test & publish code coverage
+      uses: paambaati/codeclimate-action@v2.7.4
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.secret }}
+      with:
+        coverageCommand: make test-coverage
+        debug: true
