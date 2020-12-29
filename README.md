@@ -4,5 +4,5 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/almazidiyatshin/frontend-project-lvl2/test_coverage)
 ![NodeCI](https://github.com/almazidiyatshin/frontend-project-lvl2/workflows/NodeCI/badge.svg)
 
-# How it work:
+# How it works:
 [![asciicast](https://asciinema.org/a/nm3xHaUyYgbq5x7TZPj3Og90h.svg)](https://asciinema.org/a/nm3xHaUyYgbq5x7TZPj3Og90h)
