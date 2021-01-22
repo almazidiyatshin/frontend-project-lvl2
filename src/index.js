@@ -1,40 +1,47 @@
+import _ from 'lodash';
 import parseFile from './parsers.js';
 import render from './stylish.js';
 
-const checkKey = (key, obj1, obj2, depth) => {
+const checkKey = (key, obj1, obj2) => {
   if (key in obj1 && key in obj2) {
-    if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+    if (_.isObject(obj1[key]) && _.isObject(obj2[key])) {
       const newJointKeys = Object.keys({ ...obj1[key], ...obj2[key] }).sort();
-      const indentForOperator = 2;
       const children = newJointKeys
-        .map((newKey) => checkKey(newKey, obj1[key], obj2[key], depth + indentForOperator));
+        .map((newKey) => checkKey(newKey, obj1[key], obj2[key]));
       return {
-        key, status: 'unchanged', children, depth,
+        key, isNode: true, children,
       };
     }
+
+    if (_.isObject(obj1[key]) || _.isObject(obj2[key])) {
+      return {
+        key, value: obj2[key], oldValue: obj1[key], isNode: _.isObject(obj2[key]), status: 'changed',
+      };
+    }
+
     if (obj1[key] === obj2[key]) {
       return {
-        key, value: obj1[key], status: 'unchanged', depth,
+        key, value: obj2[key], isNode: false, status: 'unchanged',
       };
     }
     return {
-      key, value: obj2[key], oldValue: obj1[key], status: 'changed', depth,
+      key, value: obj2[key], oldValue: obj1[key], isNode: false, status: 'changed',
     };
   }
+
   if (key in obj1 && !(key in obj2)) {
     return {
-      key, value: obj1[key], status: 'deleted', depth,
+      key, value: obj1[key], isNode: _.isObject(obj1[key]), status: 'deleted',
     };
   }
   return {
-    key, value: obj2[key], status: 'added', depth,
+    key, value: obj2[key], isNode: _.isObject(obj2[key]), status: 'added',
   };
 };
 
 const generateTree = (obj1, obj2) => {
-  const startDepth = 4;
   const jointKeys = Object.keys({ ...obj1, ...obj2 }).sort();
-  return jointKeys.flatMap((key) => checkKey(key, obj1, obj2, startDepth));
+  return jointKeys.flatMap((key) => checkKey(key, obj1, obj2));
 };
 
 const genDiff = (filepath1, filepath2) => {
