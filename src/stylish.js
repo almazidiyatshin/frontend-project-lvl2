@@ -1,38 +1,29 @@
 import _ from 'lodash';
 
-const generateIndent = (count) => ' '.repeat(count);
+const getIndent = (count) => ' '.repeat(count);
 
-const stringify = (value) => {
-  if (_.isObject(value)) {
-    const object = Object.entries(value);
-    return object.map(([key, value]) => (_.isObject(value) ? stringify(value) : `${key}: ${value}`)).join('\n');
+const checkValue = (objValue) => {
+  if (!(_.isObject(objValue))) {
+    return objValue;
   }
-  return `${value.key}: ${value.value}`;
+  const arrWithEntries = Object.entries(objValue);
+  return arrWithEntries.map(([key, value]) => `{\n${getIndent(4)}${key}: ${value}\n${getIndent(4)}}`);
 };
 
-const checkNode = (node) => {
-  if (node.isNode) {
-    if (node.children) {
-      const children = node.children.map((newObj) => checkNode(newObj)).join('\n');
-      return `${node.key}: {\n${children}\n}`;
-    }
-    return `${node.key}: {\n${stringify(node.value)}\n}`;
-  }
-
-  if (node.status === 'unchanged') {
-    return `${generateIndent(node.depth + 2)}${node.key}: ${node.value}`;
-  }
-  if (node.status === 'changed') {
-    return `${generateIndent(node.depth)}- ${node.key}: ${node.oldValue}\n${generateIndent(node.depth)}+ ${node.key}: ${node.value}`;
-  }
-  if (node.status === 'deleted') {
-    return `${generateIndent(node.depth)}- ${node.key}: ${node.value}`;
-  }
-  if (node.status === 'added') return `${generateIndent(node.depth)}+ ${node.key}: ${node.value}`;
+const outputStrs = {
+  withChildren: (key, value) => `${getIndent(4)}${key}: \n${render(value)}\n`,
+  changed: (key, value, oldValue) => `${getIndent(4)}- ${key}: ${checkValue(oldValue)}\n${getIndent(4)}+ ${key}: ${checkValue(value)}`,
+  unchanged: (key, value) => `${getIndent(4)}${key}: ${checkValue(value)}`,
+  added: (key, value) => `${getIndent(4)}+ ${key}: ${checkValue(value)}`,
+  deleted: (key, oldValue) => `${getIndent(4)}- ${key}: ${checkValue(oldValue)}`,
 };
+
+const getOutputStr = ({
+  key, value, oldValue, status,
+}) => outputStrs[status](key, value, oldValue, status);
 
 const render = (tree) => {
-  const arrWithDiffs = tree.map((node) => checkNode(node));
+  const arrWithDiffs = tree.flatMap((obj) => getOutputStr(obj));
   return `{\n${arrWithDiffs.join('\n ')}\n}`;
 };
 
