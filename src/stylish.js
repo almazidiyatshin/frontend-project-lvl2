@@ -7,7 +7,7 @@ const checkValue = (objValue) => {
     return objValue;
   }
   const arrWithEntries = Object.entries(objValue);
-  return arrWithEntries.map(([key, value]) => `{\n${getIndent(4)}${key}: ${value}\n${getIndent(4)}}`);
+  return arrWithEntries.map(([key, value]) => `{\n${getIndent(4)}${key}: ${checkValue(value)}\n${getIndent(4)}}`);
 };
 
 const outputStrs = {
