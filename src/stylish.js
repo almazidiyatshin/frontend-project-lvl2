@@ -2,29 +2,36 @@ import _ from 'lodash';
 
 const getIndent = (count) => ' '.repeat(count);
 
-const checkValue = (objValue) => {
-  if (!(_.isObject(objValue))) {
+const checkValue = (objValue, indent) => {
+  if (!_.isObject(objValue)) {
     return objValue;
   }
   const arrWithEntries = Object.entries(objValue);
-  return arrWithEntries.map(([key, value]) => `{\n${getIndent(4)}${key}: ${checkValue(value)}\n${getIndent(4)}}`);
+  return arrWithEntries.map(([key, value]) => `\n${getIndent(indent + 6)}${key}: ${checkValue(value, indent + 4)}\n${getIndent(indent + 1)}`);
 };
 
 const outputStrs = {
-  withChildren: (key, value) => `${getIndent(4)}${key}: \n${render(value)}\n`,
-  changed: (key, value, oldValue) => `${getIndent(4)}- ${key}: ${checkValue(oldValue)}\n${getIndent(4)}+ ${key}: ${checkValue(value)}`,
-  unchanged: (key, value) => `${getIndent(4)}${key}: ${checkValue(value)}`,
-  added: (key, value) => `${getIndent(4)}+ ${key}: ${checkValue(value)}`,
-  deleted: (key, oldValue) => `${getIndent(4)}- ${key}: ${checkValue(oldValue)}`,
+  withChildren: (indent, key, value) => {
+    const str = `{\n${getIndent(indent)}${key}:  {\n${render(value, indent + 1)}\n${getIndent(indent)}\n}`;
+    return str;
+  },
+  changed: (indent, key, value, oldValue) => {
+    const str = `${getIndent(indent + 1)}- ${key}: ${checkValue(oldValue, indent)}\n${getIndent(indent + 1)}+ ${key}: ${checkValue(value, indent)}`;
+    return str;
+  },
+  unchanged: (indent, key, value) => `${getIndent(indent + 3)}${key}: ${checkValue(value, indent)}`,
+  added: (indent, key, value) => `${getIndent(indent + 1)}+ ${key}: ${checkValue(value, indent)}`,
+  deleted: (indent, key, oldValue) => `${getIndent(indent + 1)}- ${key}: ${checkValue(oldValue, indent)}`,
 };
 
-const getOutputStr = ({
-  key, value, oldValue, status,
-}) => outputStrs[status](key, value, oldValue, status);
+const getOutputStr = (obj, indent) => {
+  const { key, value, oldValue, status } = obj;
+  return outputStrs[status](indent, key, value, oldValue);
+};
 
-const render = (tree) => {
-  const arrWithDiffs = tree.flatMap((obj) => getOutputStr(obj));
-  return `{\n${arrWithDiffs.join('\n ')}\n}`;
+const render = (tree, indent = 4) => {
+  const arrWithDiffs = tree.flatMap((obj) => getOutputStr(obj, indent));
+  return `${arrWithDiffs.join('\n')}\n`;
 };
 
 export default render;
