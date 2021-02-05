@@ -7,7 +7,7 @@ const checkValue = (objValue, indent) => {
     return objValue;
   }
   const arrWithEntries = Object.entries(objValue);
-  return arrWithEntries.map(([key, value]) => `\n${getIndent(indent + 6)}${key}: ${checkValue(value, indent + 4)}\n${getIndent(indent + 1)}`);
+  return arrWithEntries.map(([key, value]) => `{\n${getIndent(indent + 6)}${key}: ${checkValue(value, indent + 4)}\n${getIndent(indent + 1)}}`);
 };
 
 const outputStrs = {
@@ -31,7 +31,7 @@ const getOutputStr = (obj, indent) => {
 
 const render = (tree, indent = 4) => {
   const arrWithDiffs = tree.flatMap((obj) => getOutputStr(obj, indent));
-  return `${arrWithDiffs.join('\n')}\n`;
+  return `${arrWithDiffs.join('\n')}`;
 };
 
 export default render;
